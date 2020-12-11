@@ -22,50 +22,47 @@ namespace VendingMachine
         public static void Login()
         {
             CheckPermission();
-            if (Permission == true)
+            while (Permission == true)
             {
-                while (Permission == true)
+                Console.WriteLine("1.Restock  2.Add new item  3.Delete item  4.Edit item info  5.Change password  6.Logout \n");
+                Console.Write("\nExecute Order Number: ");
+                Program.InputPlusNumber(out int AdminMenuInput);
+                Menu Emenu = (Menu)AdminMenuInput;
+
+                switch (Emenu)
                 {
-                    Console.WriteLine("1.Restock  2.Add new item  3.Delete item  4.Edit item info  5.Change password  6.Logout \n");
-                    Console.Write("\nExecute Order Number: ");
-                    Program.InputPlusNumber(out int AdminMenuInput);
-                    Menu Emenu = (Menu)AdminMenuInput;
+                    case Menu.Restock:
+                        Restock();
+                        break;
 
-                    switch (Emenu)
-                    {
-                        case Menu.Restock:
-                            Restock();
-                            break;
+                    case Menu.AddItem:
+                        AddItem();
+                        break;
 
-                        case Menu.AddItem:
-                            AddItem();
-                            break;
+                    case Menu.DeleteItem:
+                        DeleteItem();
+                        break;
 
-                        case Menu.DeleteItem:
-                            DeleteItem();
-                            break;
+                    case Menu.EditItem:
+                        EditItem();
+                        break;
 
-                        case Menu.EditItem:
-                            EditItem();
-                            break;
+                    case Menu.ChangePwd:
+                        ChangePwd();
+                        break;
 
-                        case Menu.ChangePwd:
-                            ChangePwd();
-                            break;
+                    case Menu.Logout:
+                        Permission = false;
+                        Console.WriteLine("\n\n###########################");
+                        Console.WriteLine("##### Logout Success ######");
+                        Console.WriteLine("###########################\n\n");
+                        break;
 
-                        case Menu.Logout:
-                            Permission = false;
-                            Console.WriteLine("\n\n###########################");
-                            Console.WriteLine("##### Logout Success ######");
-                            Console.WriteLine("###########################\n\n");
-                            break;
-
-                        case Menu.Err:
-                            Console.WriteLine("Invaild order number!\n");
-                            break;
-                    }
-
+                    case Menu.Err:
+                        Console.WriteLine("Invaild order number!\n");
+                        break;
                 }
+
             }
 
         }
