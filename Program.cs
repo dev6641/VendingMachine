@@ -13,7 +13,6 @@ namespace Vending_Machine
         public static int Buy_item_value { get; set; }
         public static string Buy_item_name { get; set; }
         public static List<Item> Fruits = new List<Item>();
-        public static StringBuilder history = new StringBuilder(1024);
 
 
         public enum Emenu
@@ -30,7 +29,7 @@ namespace Vending_Machine
 
         static void Main()
         {
-
+            //기본 메뉴 선언
             Fruits.Add(new Item(value: 500, stock: 50, name: "Apple"));
             Fruits.Add(new Item(value: 200, stock: 80, name: "Banana"));
             Fruits.Add(new Item(value: 700, stock: 20, name: "Lemon"));
@@ -38,7 +37,7 @@ namespace Vending_Machine
             Fruits.Add(new Item(value: 1000, stock: 10, name: "Melon"));
 
             Console.WriteLine("#################################");
-            Console.WriteLine("###### Vending Machine 0.3 ######");
+            Console.WriteLine("###### Vending Machine 0.4 ######");
             Console.WriteLine("#################################\n");
             Item.GetItems(Fruits);
 
@@ -48,7 +47,7 @@ namespace Vending_Machine
                 //제어 메뉴 출력
                 Console.WriteLine("1.Show Items  2.Order  3.Charge Money  4.Check Money  5.Admin Login  6.Hsitory 7.Exit \n");
                 Console.Write(" \nExecute Order Number: ");
-                InputPlusNumber(out int menu_num);
+                InputPlusIntFailTo0(out int menu_num);
                 Emenu menu_select = (Emenu)menu_num;
 
                 switch (menu_select)
@@ -58,7 +57,7 @@ namespace Vending_Machine
                         break;
 
                     case Emenu.BuyItem:
-                        BuyItem();
+                        BuyItem(Fruits);
                         break;
 
                     case Emenu.SetMoney:
@@ -70,7 +69,7 @@ namespace Vending_Machine
                         break;
 
                     case Emenu.AdminLogin:
-                        Admin.Login();
+                        Admin.Login(Fruits);
                         break;
 
                     case Emenu.History:
@@ -83,7 +82,7 @@ namespace Vending_Machine
                         Console.WriteLine("###########################");
                         return;
 
-                    default:
+                    case Emenu.None:
                         Console.WriteLine("It is wrong number\n");
                         break;
                 }
@@ -92,7 +91,7 @@ namespace Vending_Machine
 
         static void ShowHistory()
         {
-            Console.WriteLine(history);
+            Console.WriteLine(Item.History);
         }
 
         static void SetMoney()
@@ -101,7 +100,7 @@ namespace Vending_Machine
             Console.WriteLine($"Current amount: {Money} \n");
             Console.WriteLine($"Rechargeable amount: {int.MaxValue - Money}");
             Console.Write("Charge amount: ");
-            InputPlusNumber(out int money_charge);
+            InputPlusIntFailTo0(out int money_charge);
             if (Money <= int.MaxValue - money_charge)
             {
                 Money += money_charge;
@@ -114,29 +113,29 @@ namespace Vending_Machine
 
         }
 
-        static void BuyItem()
+        static void BuyItem(List<Item> items)
         {
             Console.Write("The product number to be purchased: ");
-            InputPlusNumber(out int buy_num);
+            InputPlusIntFailTo0(out int buy_num);
             buy_num--;
 
-            if (buy_num > Fruits.Count)
+            if (buy_num > items.Count)
             {
                 Console.WriteLine("This product does not exist \n");
                 return;
             }
 
             Console.Write("The number of products to purchase: ");
-            InputPlusNumber(out int buy_counts);
+            InputPlusIntFailTo0(out int buy_counts);
             if (buy_counts == 0)
             {
                 Console.WriteLine("The minimum number of purchases is 1. \n");
                 return;
             }
 
-            Buy_amount = Fruits[buy_num].Item_value * buy_counts;
-            Buy_item_name = Fruits[buy_num].Item_name;
-            Buy_item_stock = Fruits[buy_num].Item_stock;
+            Buy_amount = items[buy_num].Item_value * buy_counts;
+            Buy_item_name = items[buy_num].Item_name;
+            Buy_item_stock = items[buy_num].Item_stock;
 
             Console.WriteLine($"Total payment amount: {Buy_amount}\n");
 
@@ -152,9 +151,10 @@ namespace Vending_Machine
                 Console.WriteLine("Payment finished\n");
                 Console.WriteLine(messages);
                 Console.WriteLine($"Current money: {Money} \n");
-                Fruits[buy_num].Item_stock -= buy_counts;
-                history.AppendLine(messages);
-                history.AppendLine($"Amount: {Buy_amount}\n");
+                items[buy_num].Item_stock -= buy_counts;
+                Item.History.AppendLine(messages);
+                Item.History.AppendLine($"Amount: {Buy_amount}\n");
+                Item.ItemUpdate = true;
 
             }
             else if (Buy_item_stock < buy_counts)
@@ -165,7 +165,7 @@ namespace Vending_Machine
             Buy_item_stock = 0;
         }
 
-        public static void InputPlusNumber(out int number)
+        public static void InputPlusIntFailTo0(out int number)
         {
             bool valueSuccess = int.TryParse(Console.ReadLine(), out int input);
 
@@ -180,8 +180,4 @@ namespace Vending_Machine
             }
         }
     }
-
-    
-
-    
 }
